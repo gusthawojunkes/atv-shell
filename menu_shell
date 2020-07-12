@@ -1,0 +1,134 @@
+#!/bin/bash
+
+function menu {
+
+	echo "Opções"
+	echo "(L)istar arquivos"
+	echo "(H)ard Disk"
+	echo "(R)am"
+	echo "(C)onfigurações de rede"
+	echo "(B)achup de arquivos"
+	echo "(S)air"
+	echo ""
+	echo "Qual opção você deseja?"
+	read opc
+
+}
+
+function condicoes {
+
+	case "$opc" in
+
+		l|L)
+			clear
+			echo "Qual o tamanho (MB) do(s) arquivo(s) que você deseja encontrar? "
+			read tam
+			echo "Qual a(s) extensão(ões) final(is) do arquivo? "
+			read ext
+			echo "A partir de qual(is) pasta(s) você deseja listar? "
+			read partida
+
+			if ( echo $tam | egrep '[^0-9]' &> /dev/null )
+			then
+				echo "Somente números são válidos para o tamanho do arquivo"
+			else
+			    if [ -z "$ext" ]
+			    then
+				if [ -z "$partida" ]
+				then
+				    sudo find / -size +"$tam"M
+				else
+				    sudo find $partida -size +"$tam"M
+				fi
+
+			    else
+				if [ -z "$partida" ]
+				then
+				    sudo find /  -iname ".$ext" ! -size +"$tam"M
+				else
+				    sudo find $partida -iname ".$ext" ! -size +"$tam"M
+				fi
+
+			    fi
+			fi
+		;;
+		
+		h|H)
+			clear
+			df -h
+		;;
+		
+		r|R)
+			clear
+			free -m -t
+		;;
+		
+		c|C)
+			clear
+			ip a | ifconfig
+		;;
+		b|B)
+			clear
+			echo "Digite o diretório que você que você quer fazer backup: "
+			read pasta
+			echo "Digite o local onde você deseja salvar o backup (em .tar.gz): "
+			read destino
+			echo "Digite o nome do diretório em que deseja salvar:"
+			read arq
+
+			tar -zcvf "$destino/arq.tar.gz" $pasta
+		;;
+		
+		s|S)
+		
+			clear
+			echo "Saindo..."
+			exit
+		;;
+		
+		"")
+			clear
+			echo "Não pode deixar em branco, tente uma das opções abaixo!"
+			menu
+			condicoes
+		;; 
+		
+		*)
+			clear
+			echo "Opção inválida, tente uma das opções abaixo!"
+			menu
+			condicoes
+
+	esac
+}
+
+function refazer {
+
+	echo "Deseja fazer outra consulta? [S/N]"
+	read opcsn
+	if [ "$opcsn" = "s" ] || [ "$opcsn" = "S" ];
+	then
+		clear
+		menu
+		condicoes
+		refazer
+		
+	elif [ "$opcsn" = "n" ] || [ "$opcsn" = "N" ];
+	then
+		clear
+		echo "Saindo..."
+		exit
+		
+	else
+		echo "Você digitou um valor inválido, por favor tente novamente"
+		refazer
+	fi
+
+}
+
+menu
+condicoes
+refazer
+
+
+
