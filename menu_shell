@@ -7,7 +7,7 @@ function menu {
 	echo "(H)ard Disk"
 	echo "(R)am"
 	echo "(C)onfigurações de rede"
-	echo "(B)achup de arquivos"
+	echo "(B)ackup de arquivos"
 	echo "(S)air"
 	echo ""
 	echo "Qual opção você deseja?"
